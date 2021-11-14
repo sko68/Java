@@ -2,9 +2,7 @@ package com.sk.java;
 
 import org.junit.Test;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 
 /**
  * @Description: TODO
@@ -31,16 +29,66 @@ public class ObjectInputOutputStreamTest {
 
      */
     @Test
-    public void testObjectOutputStream() throws IOException {
-        //1.
-        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("object.dat"));
-        //2.
-        oos.writeObject(new String("我是一一只小鸭子"));
-        oos.flush();//刷新操作
-        oos.writeObject(new Person("李华",23));
-        oos.flush();
+    public void testObjectOutputStream() {
+        ObjectOutputStream oos = null;
+        try {
+            //1.
+            oos = new ObjectOutputStream(new FileOutputStream("object.dat"));
+            //2.
+            oos.writeObject(new String("我是一一只小鸭子"));
+            oos.flush();//刷新操作
+            oos.writeObject(new Person("李华",23));
+            oos.flush();
 
-        oos.writeObject(new Person("张三",19));
+            oos.writeObject(new Person("张三", 19));
+            oos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            //3.
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    /*反序列化：将磁盘文件中的对象还原为内存中的一个Java对象
+    使用ObjectInputStream来实现
+     */
+    @Test
+    public void testObjectInputStream() {
+
+        ObjectInputStream ois = null;
+        try {
+            ois = new ObjectInputStream(new FileInputStream("object.dat"));
+
+            Object obj = ois.readObject();
+            String str = (String) obj;
+
+            Person p = (Person) ois.readObject();
+            Person p1 = (Person)ois.readObject();
+
+            System.out.println(str);
+            System.out.println(p);
+            System.out.println(p1);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+
+            if (ois != null) {
+                try {
+                    ois.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
     }
 }
